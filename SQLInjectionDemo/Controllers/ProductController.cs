@@ -17,12 +17,16 @@ namespace SQLInjectionDemo
             if (!string.IsNullOrEmpty(SearchString))
             {
                 string connString = @"Server=YOUR_SERVER;Database=BookShopDb;Trusted_Connection=True;";
-                string query = "select * from Products WHERE Name= '" + SearchString + "'";
+                string query = "select * from Products WHERE Name= @SearchString";
 
                 DataTable dataTable = new DataTable();
 
                 SqlConnection conn = new SqlConnection(connString);
                 SqlCommand cmd = new SqlCommand(query, conn);
+                
+                SqlParameter searchStringParam = new SqlParameter("@SearchString", SearchString);
+                cmd.Parameters.Add(searchStringParam);
+
                 conn.Open();
 
                 SqlDataAdapter da = new SqlDataAdapter(cmd);
@@ -39,8 +43,6 @@ namespace SQLInjectionDemo
                 };
 
                 return View(vm);
-            }
-            return View();
         }
 
         private List<Product> GetProductsList(DataTable table)
